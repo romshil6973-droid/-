@@ -1,0 +1,36 @@
+# База данных (содержит личные данные)
+*.db
+*.db-shm
+*.db-wal
+
+# Отчёты Excel
+reports/
+*.xlsx
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+
+# Тесты
+.pytest_cache/
+.coverage
+htmlcov/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Системные файлы Windows
+Thumbs.db
+desktop.ini
+
+# Временные файлы
+*.tmp
+*.log
