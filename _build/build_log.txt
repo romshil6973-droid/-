@@ -1,0 +1,83 @@
+Build started 
+192 INFO: PyInstaller: 6.20.0, contrib hooks: 2026.6
+193 INFO: Python: 3.14.4
+218 INFO: Platform: Windows-10-10.0.19045-SP0
+218 INFO: Python environment: C:\Users\User\AppData\Local\Python\pythoncore-3.14-64
+282 INFO: Module search paths (PYTHONPATH):
+['C:\\Users\\User\\Downloads\\06_Разработка ПО и '
+ 'Вайб-кодинг\\06_14_Мониторинг\\Мониторинг активности',
+ 'C:\\Users\\User\\AppData\\Local\\Python\\pythoncore-3.14-64\\python314.zip',
+ 'C:\\Users\\User\\AppData\\Local\\Python\\pythoncore-3.14-64\\DLLs',
+ 'C:\\Users\\User\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib',
+ 'C:\\Users\\User\\AppData\\Local\\Python\\pythoncore-3.14-64',
+ 'C:\\Users\\User\\AppData\\Roaming\\Python\\Python314\\site-packages',
+ 'C:\\Users\\User\\AppData\\Roaming\\Python\\Python314\\site-packages\\win32',
+ 'C:\\Users\\User\\AppData\\Roaming\\Python\\Python314\\site-packages\\win32\\lib',
+ 'C:\\Users\\User\\AppData\\Roaming\\Python\\Python314\\site-packages\\Pythonwin',
+ 'C:\\Users\\User\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\site-packages',
+ 'C:\\Users\\User\\Downloads\\06_Разработка ПО и '
+ 'Вайб-кодинг\\06_14_Мониторинг\\Мониторинг активности',
+ 'C:\\Users\\User\\Downloads\\06_Разработка ПО и Вайб-кодинг\\06_14_Мониторинг']
+774 INFO: Appending 'datas' from .spec
+775 INFO: checking Analysis
+804 INFO: Building because excludes changed
+804 INFO: Looking for Python shared library...
+804 INFO: Using Python shared library: C:\Users\User\AppData\Local\Python\pythoncore-3.14-64\python314.dll
+804 INFO: Running Analysis Analysis-00.toc
+804 INFO: Target bytecode optimization level: 0
+804 INFO: Initializing module dependency graph...
+805 INFO: Initializing module graph hook caches...
+846 INFO: Analyzing modules for base_library.zip ...
+2646 INFO: Processing standard module hook 'hook-encodings.py' from 'C:\\Users\\User\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\site-packages\\PyInstaller\\hooks'
+3197 INFO: Processing standard module hook 'hook-pickle.py' from 'C:\\Users\\User\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\site-packages\\PyInstaller\\hooks'
+3652 INFO: Processing standard module hook 'hook-difflib.py' from 'C:\\Users\\User\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\site-packages\\PyInstaller\\hooks'
+3667 INFO: Processing standard module hook 'hook-heapq.py' from 'C:\\Users\\User\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\site-packages\\PyInstaller\\hooks'
+6677 INFO: Caching module dependency graph...
+6715 INFO: Analyzing C:\Users\User\Downloads\06_Разработка ПО и Вайб-кодинг\06_14_Мониторинг\Мониторинг активности\main.py
+6736 INFO: Processing standard module hook 'hook-customtkinter.py' from 'C:\\Users\\User\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+6790 INFO: Processing pre-find-module-path hook 'hook-tkinter.py' from 'C:\\Users\\User\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\site-packages\\PyInstaller\\hooks\\pre_find_module_path'
+6792 INFO: TclTkInfo: initializing cached Tcl/Tk info...
+7215 INFO: Processing standard module hook 'hook-_tkinter.py' from 'C:\\Users\\User\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\site-packages\\PyInstaller\\hooks'
+7322 INFO: Processing standard module hook 'hook-platform.py' from 'C:\\Users\\User\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\site-packages\\PyInstaller\\hooks'
+7372 INFO: Processing standard module hook 'hook-sysconfig.py' from 'C:\\Users\\User\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\site-packages\\PyInstaller\\hooks'
+7378 INFO: Processing standard module hook 'hook-_ctypes.py' from 'C:\\Users\\User\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\site-packages\\PyInstaller\\hooks'
+7385 INFO: Processing pre-safe-import-module hook 'hook-packaging.py' from 'C:\\Users\\User\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
+7388 INFO: SetuptoolsInfo: initializing cached setuptools info...
+8125 INFO: Processing pre-safe-import-module hook 'hook-typing_extensions.py' from 'C:\\Users\\User\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
+8468 INFO: Processing standard module hook 'hook-multiprocessing.util.py' from 'C:\\Users\\User\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\site-packages\\PyInstaller\\hooks'
+8593 INFO: Processing standard module hook 'hook-xml.py' from 'C:\\Users\\User\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\site-packages\\PyInstaller\\hooks'
+9740 INFO: Processing standard module hook 'hook-PIL.py' from 'C:\\Users\\User\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\site-packages\\PyInstaller\\hooks'
+9889 INFO: Processing standard module hook 'hook-PIL.Image.py' from 'C:\\Users\\User\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\site-packages\\PyInstaller\\hooks'
+10344 INFO: Processing standard module hook 'hook-xml.etree.cElementTree.py' from 'C:\\Users\\User\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\site-packages\\PyInstaller\\hooks'
+10593 INFO: Processing standard module hook 'hook-PIL.ImageFilter.py' from 'C:\\Users\\User\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\site-packages\\PyInstaller\\hooks'
+11323 INFO: Processing standard module hook 'hook-sqlite3.py' from 'C:\\Users\\User\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\site-packages\\PyInstaller\\hooks'
+11698 INFO: Processing standard module hook 'hook-psutil.py' from 'C:\\Users\\User\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+11793 INFO: Processing standard module hook 'hook-openpyxl.py' from 'C:\\Users\\User\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+13210 INFO: Analyzing hidden import 'PIL._tkinter_finder'
+13212 INFO: Processing module hooks (post-graph stage)...
+13625 INFO: Processing standard module hook 'hook-PIL.SpiderImagePlugin.py' from 'C:\\Users\\User\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\site-packages\\PyInstaller\\hooks'
+13766 INFO: Processing standard module hook 'hook-_tkinter.py' from 'C:\\Users\\User\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\site-packages\\PyInstaller\\hooks'
+13778 INFO: Performing binary vs. data reclassification (936 entries)
+13988 INFO: Looking for ctypes DLLs
+14006 WARNING: Ignoring AppKit.framework/AppKit imported from C:\Users\User\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\darkdetect\_mac_detect.py - only basenames are supported with ctypes imports!
+14026 INFO: Analyzing run-time hooks ...
+14028 INFO: Including run-time hook 'pyi_rth__tkinter.py' from 'C:\\Users\\User\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\site-packages\\PyInstaller\\hooks\\rthooks'
+14030 INFO: Including run-time hook 'pyi_rth_inspect.py' from 'C:\\Users\\User\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\site-packages\\PyInstaller\\hooks\\rthooks'
+14034 INFO: Including run-time hook 'pyi_rth_pkgutil.py' from 'C:\\Users\\User\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\site-packages\\PyInstaller\\hooks\\rthooks'
+14037 INFO: Including run-time hook 'pyi_rth_multiprocessing.py' from 'C:\\Users\\User\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\site-packages\\PyInstaller\\hooks\\rthooks'
+14065 INFO: Creating base_library.zip...
+14085 INFO: Looking for dynamic libraries
+14766 INFO: Extra DLL search directories (AddDllDirectory): ['C:\\Users\\User\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\site-packages\\numpy.libs']
+14766 INFO: Extra DLL search directories (PATH): []
+15276 INFO: Warnings written to C:\Users\User\Downloads\06_Разработка ПО и Вайб-кодинг\06_14_Мониторинг\Мониторинг активности\_build\work\WorkdayMonitor\warn-WorkdayMonitor.txt
+15321 INFO: Graph cross-reference written to C:\Users\User\Downloads\06_Разработка ПО и Вайб-кодинг\06_14_Мониторинг\Мониторинг активности\_build\work\WorkdayMonitor\xref-WorkdayMonitor.html
+15373 INFO: checking PYZ
+15404 INFO: checking PKG
+15406 INFO: Bootloader C:\Users\User\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\PyInstaller\bootloader\Windows-64bit-intel\runw.exe
+15406 INFO: checking EXE
+15414 INFO: checking COLLECT
+15441 INFO: Removing dir C:\Users\User\Downloads\06_Разработка ПО и Вайб-кодинг\06_14_Мониторинг\Мониторинг активности\dist\WorkdayMonitor
+15652 INFO: Building COLLECT COLLECT-00.toc
+16849 INFO: Building COLLECT COLLECT-00.toc completed successfully.
+16869 INFO: Build complete! The results are available in: C:\Users\User\Downloads\06_Разработка ПО и Вайб-кодинг\06_14_Мониторинг\Мониторинг активности\dist
+ISCC: [] 

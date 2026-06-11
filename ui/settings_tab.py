@@ -174,9 +174,10 @@ class SettingsTab(ctk.CTkFrame):
             # Запуск из .exe (собранный PyInstaller)
             return f'"{sys.executable}"'
         else:
-            # Запуск через Python
+            # Запуск через Python — используем pythonw.exe чтобы не открывалось CMD-окно
             script = str(Path(__file__).parent.parent / "main.py")
-            return f'"{sys.executable}" "{script}"'
+            pythonw = sys.executable.replace("python.exe", "pythonw.exe")
+            return f'"{pythonw}" "{script}"'
 
     # ─── Вспомогательные методы ───────────────────────────────────────────────
 
