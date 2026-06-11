@@ -12,6 +12,7 @@ from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 from openpyxl.utils import get_column_letter
 
 from .database import Database
+from .browser_history import load_browser_history, get_urls_in_window, is_browser
 
 # ─── Цвета (брендбук "Система Порядка") ───────────────────────────────────────
 C_TITLE_BG   = "0B1C3D"   # Тёмно-синий — строка заголовка отчёта
@@ -231,43 +232,70 @@ class ExcelReporter:
         fio      = f"{emp.get('surname','')} {emp.get('name','')}".strip()
         position = emp.get('position', '')
         date_ru  = _date_ru(date_obj)
+        date_str = date_obj.strftime('%Y-%m-%d')
 
-        self._title_row(ws, "МОНИТОРИНГ АКТИВНОСТИ КОМПЬЮТЕРА")
-        self._meta_row(ws, date_ru, fio, position)
+        self._title_row(ws, "МОНИТОРИНГ АКТИВНОСТИ КОМПЬЮТЕРА", cols=6)
+        self._meta_row(ws, date_ru, fio, position, cols=6)
         ws.append([])
 
-        self._header_row(ws, ["№", "Начало", "Конец", "Продолжительность", "Приложение / Операция"])
+        self._header_row(ws, ["№", "Начало", "Конец", "Продолжительность",
+                               "Приложение / Операция", "URL (браузер)"])
+
+        # Загружаем историю браузеров один раз для всего дня
+        try:
+            browser_history = load_browser_history(date_str)
+        except Exception:
+            browser_history = []
 
         total_active = 0
         for i, r in enumerate(records, 1):
-            s_dt = r.get('start_time')
-            e_dt = r.get('end_time')
+            s_dt_str = r.get('start_time')
+            e_dt_str = r.get('end_time')
+
+            # Парсим datetime для сравнения с историей браузера
+            try:
+                s_dt = datetime.strptime(s_dt_str, '%Y-%m-%d %H:%M:%S') if s_dt_str else None
+                e_dt = datetime.strptime(e_dt_str, '%Y-%m-%d %H:%M:%S') if e_dt_str else None
+            except ValueError:
+                s_dt = e_dt = None
+
+            dur = 0
             if s_dt and e_dt:
-                try:
-                    dur = int((
-                        datetime.strptime(e_dt, '%Y-%m-%d %H:%M:%S') -
-                        datetime.strptime(s_dt, '%Y-%m-%d %H:%M:%S')
-                    ).total_seconds())
-                except ValueError:
-                    dur = 0
-            else:
-                dur = 0
+                dur = max(0, int((e_dt - s_dt).total_seconds()))
 
             if r.get('activity_type') != 'idle':
                 total_active += dur
 
-            # Читабельное описание
+            # Читабельное описание приложения
             app   = r.get('app_name', '')
             title = r.get('window_title', '')
             desc  = app
             if title and title != app and len(title) < 90:
                 desc = f"{app} — {title}"
 
+            # URL из истории браузера (только для браузерных строк)
+            url_text = ""
+            if s_dt and e_dt and is_browser(app) and browser_history:
+                urls = get_urls_in_window(browser_history, s_dt, e_dt)
+                if urls:
+                    # Не более 5 URL в одной ячейке, разделённых переносом
+                    url_text = "\n".join(urls[:5])
+                    if len(urls) > 5:
+                        url_text += f"\n... ещё {len(urls) - 5}"
+
             self._data_row(ws, [
-                i, _fmt_time(s_dt), _fmt_time(e_dt), _fmt_dur(dur), desc
-            ], i)
+                i, _fmt_time(s_dt_str), _fmt_time(e_dt_str), _fmt_dur(dur), desc, url_text
+            ], i, center_cols={1, 2, 3, 4})
 
-        self._total_row(ws, "АКТИВНОЕ ВРЕМЯ:", _fmt_dur(total_active))
+        self._total_row(ws, "АКТИВНОЕ ВРЕМЯ:", _fmt_dur(total_active), cols=6)
 
-        for col, width in zip("ABCDE", [5, 12, 12, 18, 65]):
+        # Ширина столбцов
+        for col, width in zip("ABCDEF", [5, 12, 12, 18, 55, 60]):
             ws.column_dimensions[col].width = width
+
+        # Высота строк с URL — увеличиваем для читаемости
+        for row in ws.iter_rows(min_row=4):
+            url_cell = row[5] if len(row) > 5 else None
+            if url_cell and url_cell.value and '\n' in str(url_cell.value):
+                line_count = str(url_cell.value).count('\n') + 1
+                ws.row_dimensions[url_cell.row].height = max(15 * line_count, 30)
