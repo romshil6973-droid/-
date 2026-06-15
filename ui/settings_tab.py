@@ -169,15 +169,19 @@ class SettingsTab(ctk.CTkFrame):
 
     @staticmethod
     def _get_exe_path() -> str:
-        """Формирует строку запуска для реестра."""
+        """Формирует строку запуска для реестра.
+
+        pythonw.exe запускает скрипт без окна CMD — VBS-лаунчер не нужен.
+        """
         if getattr(sys, 'frozen', False):
             # Запуск из .exe (собранный PyInstaller)
             return f'"{sys.executable}"'
         else:
-            # Запуск через Python — используем pythonw.exe чтобы не открывалось CMD-окно
-            script = str(Path(__file__).parent.parent / "main.py")
+            script_dir = Path(__file__).parent.parent
+            main_py = script_dir / "main.py"
+            # pythonw.exe = python без консольного окна
             pythonw = sys.executable.replace("python.exe", "pythonw.exe")
-            return f'"{pythonw}" "{script}"'
+            return f'"{pythonw}" "{main_py}"'
 
     # ─── Вспомогательные методы ───────────────────────────────────────────────
 

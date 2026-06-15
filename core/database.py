@@ -156,10 +156,20 @@ class Database:
         return [dict(r) for r in rows]
 
     def get_dates_pending_report(self):
-        """Returns past dates that have sessions but no generated report."""
+        """Returns past dates that have any data but no generated report.
+
+        Checks work_sessions (ручные задачи), activity_log (авто-мониторинг)
+        и day_sessions (старт/стоп дня) — хватит любой из трёх таблиц.
+        """
         conn = self._connect()
         rows = conn.execute("""
-            SELECT DISTINCT date FROM work_sessions
+            SELECT DISTINCT date FROM (
+                SELECT date FROM work_sessions
+                UNION
+                SELECT date FROM activity_log
+                UNION
+                SELECT date FROM day_sessions WHERE work_start IS NOT NULL
+            )
             WHERE date < date('now', 'localtime')
               AND date NOT IN (
                   SELECT value FROM settings WHERE key LIKE 'report_done_%'
