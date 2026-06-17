@@ -292,8 +292,7 @@ class TestReporterWithUrlColumn:
         reporter = ExcelReporter(db)
 
         with tempfile.TemporaryDirectory() as tmpdir:
-            emp = {"name": "Test", "surname": "Test", "position": "Test"}
-            path = reporter.generate("2024-06-10", tmpdir, emp)
+            path = reporter.generate("2024-06-10", "testuser", tmpdir)
             wb = openpyxl.load_workbook(path)
 
             # Sheet name contains Cyrillic - access by index
@@ -322,8 +321,7 @@ class TestReporterWithUrlColumn:
 
         reporter = ExcelReporter(db)
         with tempfile.TemporaryDirectory() as tmpdir:
-            emp = {"name": "A", "surname": "B", "position": "C"}
-            path = reporter.generate("2024-06-10", tmpdir, emp)
+            path = reporter.generate("2024-06-10", "testuser", tmpdir)
             wb = openpyxl.load_workbook(path)
             ws = wb.worksheets[1]
 
@@ -348,6 +346,5 @@ class TestReporterWithUrlColumn:
 
         reporter = ExcelReporter(db)
         with tempfile.TemporaryDirectory() as tmpdir:
-            emp = {"name": "R", "surname": "S", "position": "CEO"}
-            path = reporter.generate("2024-06-10", tmpdir, emp)
+            path = reporter.generate("2024-06-10", "testuser", tmpdir)
             assert Path(path).exists()

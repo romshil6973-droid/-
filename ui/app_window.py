@@ -256,16 +256,16 @@ class App(ctk.CTk):
         self._generate_for_dates([today], mark_done=False)
 
     def _generate_for_dates(self, dates: list, mark_done: bool = True):
-        st = self._tabs.get("settings")
-        emp       = st.get_employee_info() if st else {}
-        report_dir = (st.get_report_dir() if st
-                      else str(Path.home() / "Documents" / "WorkdayReports"))
+        from core.config import load_config
+        cfg      = load_config()
+        login    = cfg.get('login') or 'user'
+        gdrive   = cfg.get('google_drive_path') or str(Path.home() / "Documents" / "WorkdayReports")
 
         reporter  = ExcelReporter(self.db)
         generated = []
         for date_str in dates:
             try:
-                path = reporter.generate(date_str, report_dir, emp)
+                path = reporter.generate(date_str, login, gdrive)
                 if mark_done:
                     self.db.mark_report_done(date_str)
                 generated.append(path)
@@ -273,12 +273,13 @@ class App(ctk.CTk):
                 print(f"Report error {date_str}: {e}")
 
         if generated:
-            names = "\n".join(Path(p).name for p in generated)
-            label = "" if mark_done else " (предварительный)"
+            names      = "\n".join(Path(p).name for p in generated)
+            save_dir   = str(Path(gdrive) / login)
+            label      = "" if mark_done else " (предварительный)"
             from tkinter import messagebox
             messagebox.showinfo(
                 f"Отчёт сформирован{label}",
-                f"Файл:\n{names}\n\nПапка: {report_dir}"
+                f"Файл:\n{names}\n\nПапка: {save_dir}"
             )
 
     # ---- Clock -----------------------------------------------------------------

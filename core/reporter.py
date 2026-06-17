@@ -63,14 +63,14 @@ class ExcelReporter:
     def __init__(self, db: Database):
         self.db = db
 
-    def generate(self, date_str: str, report_dir: str, employee: dict) -> str:
+    def generate(self, date_str: str, login: str, gdrive_path: str) -> str:
         """
-        Генерирует Excel-файл.
+        Генерирует Excel-файл и сохраняет в Google Drive.
 
         Args:
-            date_str:   Дата в формате YYYY-MM-DD
-            report_dir: Папка для сохранения
-            employee:   {'name': ..., 'surname': ..., 'position': ...}
+            date_str:    Дата в формате YYYY-MM-DD
+            login:       Логин сотрудника (например, 'shilov')
+            gdrive_path: Путь к папке /Компания/Отчеты_менеджеров/ на Google Drive Desktop
 
         Returns:
             Полный путь к созданному файлу.
@@ -83,14 +83,14 @@ class ExcelReporter:
 
         wb = openpyxl.Workbook()
 
-        self._sheet_workday(wb, date_obj, work_rows, day_info, achieve, employee)
-        self._sheet_activity(wb, date_obj, act_rows, employee)
+        self._sheet_workday(wb, date_obj, work_rows, day_info, achieve, login)
+        self._sheet_activity(wb, date_obj, act_rows, login)
 
-        # Путь файла
-        Path(report_dir).mkdir(parents=True, exist_ok=True)
-        fio = f"{employee.get('surname','')} {employee.get('name','')}".strip() or "Сотрудник"
-        filename = f"Отчёт_{fio}_{date_str}.xlsx"
-        filepath = str(Path(report_dir) / filename)
+        # Сохраняем в {gdrive_path}/{login}/Отчёт_{date_str}.xlsx
+        save_dir = Path(gdrive_path) / login
+        save_dir.mkdir(parents=True, exist_ok=True)
+        filename = f"Отчёт_{date_str}.xlsx"
+        filepath = str(save_dir / filename)
         wb.save(filepath)
         return filepath
 
@@ -109,9 +109,9 @@ class ExcelReporter:
         cell.alignment = Alignment(horizontal="center", vertical="center")
         ws.row_dimensions[row].height = 38
 
-    def _meta_row(self, ws, date_ru: str, fio: str, position: str, cols: int = 5):
-        """Строка с датой, ФИО, должностью под заголовком."""
-        ws.append([f"Дата: {date_ru}", "", f"Сотрудник: {fio}", "", f"Должность: {position}"])
+    def _meta_row(self, ws, date_ru: str, login: str, cols: int = 5):
+        """Строка с датой и логином под заголовком."""
+        ws.append([f"Дата: {date_ru}", "", f"Логин: {login}", "", ""])
         row = ws.max_row
         fill = PatternFill("solid", fgColor="14294D")
         font = Font(color=C_WHITE, size=11)
@@ -172,17 +172,15 @@ class ExcelReporter:
 
     # ──────────────────────────────────────────────────────────────────────────
 
-    def _sheet_workday(self, wb, date_obj, sessions, day_info, achieve, emp):
+    def _sheet_workday(self, wb, date_obj, sessions, day_info, achieve, login):
         """Лист «Фото рабочего дня»."""
         ws = wb.active
         ws.title = "Фото рабочего дня"
 
-        fio      = f"{emp.get('surname','')} {emp.get('name','')}".strip()
-        position = emp.get('position', '')
-        date_ru  = _date_ru(date_obj)
+        date_ru = _date_ru(date_obj)
 
         self._title_row(ws, "ФОТО РАБОЧЕГО ДНЯ")
-        self._meta_row(ws, date_ru, fio, position)
+        self._meta_row(ws, date_ru, login)
 
         # Время начала/конца рабочего дня
         if day_info:
@@ -225,17 +223,15 @@ class ExcelReporter:
         for col, width in zip("ABCDE", [5, 12, 12, 18, 55]):
             ws.column_dimensions[col].width = width
 
-    def _sheet_activity(self, wb, date_obj, records, emp):
+    def _sheet_activity(self, wb, date_obj, records, login):
         """Лист «Мониторинг активности»."""
         ws = wb.create_sheet("Мониторинг активности")
 
-        fio      = f"{emp.get('surname','')} {emp.get('name','')}".strip()
-        position = emp.get('position', '')
         date_ru  = _date_ru(date_obj)
         date_str = date_obj.strftime('%Y-%m-%d')
 
         self._title_row(ws, "МОНИТОРИНГ АКТИВНОСТИ КОМПЬЮТЕРА", cols=6)
-        self._meta_row(ws, date_ru, fio, position, cols=6)
+        self._meta_row(ws, date_ru, login, cols=6)
         ws.append([])
 
         self._header_row(ws, ["№", "Начало", "Конец", "Продолжительность",

@@ -1,17 +1,17 @@
 """
 Вкладка «Настройки».
-ФИО, должность, папка для отчётов, автозапуск Windows.
+Отображает текущий логин и путь Google Drive, автозапуск Windows.
 """
 
 import os
 import sys
 import winreg
 from pathlib import Path
-import tkinter.filedialog as fd
 
 import customtkinter as ctk
 
 from core.database import Database
+from core.config import load_config, get_config_path
 from . import theme as T
 
 APP_NAME = "WorkdayMonitor"   # Имя в реестре автозапуска
@@ -29,36 +29,60 @@ class SettingsTab(ctk.CTkFrame):
     def _build(self):
         self.grid_columnconfigure(0, weight=1)
 
-        # ── Данные сотрудника ─────────────────────────────────────────────────
-        emp_card = self._card("👤  Данные сотрудника", row=0)
+        # ── Конфигурация (логин + Google Drive) ───────────────────────────────
+        cfg_card = self._card("📋  Конфигурация WorkdayMonitor", row=0)
 
-        self.fld_surname = self._field(emp_card, "Фамилия")
-        self.fld_name    = self._field(emp_card, "Имя")
-        self.fld_pos     = self._field(emp_card, "Должность")
-
-        # ── Папка отчётов ─────────────────────────────────────────────────────
-        rep_card = self._card("📁  Папка для отчётов", row=1)
-
-        rep_row = ctk.CTkFrame(rep_card, fg_color="transparent")
-        rep_row.pack(fill="x", padx=12, pady=6)
-        rep_row.grid_columnconfigure(0, weight=1)
-
-        self.fld_dir = ctk.CTkEntry(
-            rep_row,
-            fg_color=T.BG_INPUT, border_color=T.BORDER, text_color=T.TEXT_PRIMARY,
-            font=ctk.CTkFont(T.FONT_SANS, 12), height=32, corner_radius=6
+        # Логин
+        row_login = ctk.CTkFrame(cfg_card, fg_color="transparent")
+        row_login.pack(fill="x", padx=12, pady=(4, 2))
+        ctk.CTkLabel(
+            row_login, text="Логин:", width=120, anchor="w",
+            font=ctk.CTkFont(T.FONT_SANS, 12), text_color=T.TEXT_MUTED
+        ).pack(side="left")
+        self.lbl_login = ctk.CTkLabel(
+            row_login, text="—",
+            font=ctk.CTkFont(T.FONT_SANS, 12, "bold"), text_color=T.TEXT_PRIMARY
         )
-        self.fld_dir.grid(row=0, column=0, sticky="ew", padx=(0, 8))
+        self.lbl_login.pack(side="left")
+
+        # Путь Google Drive
+        row_path = ctk.CTkFrame(cfg_card, fg_color="transparent")
+        row_path.pack(fill="x", padx=12, pady=(2, 6))
+        ctk.CTkLabel(
+            row_path, text="Google Drive:", width=120, anchor="w",
+            font=ctk.CTkFont(T.FONT_SANS, 12), text_color=T.TEXT_MUTED
+        ).pack(side="left")
+        self.lbl_gdrive = ctk.CTkLabel(
+            row_path, text="—",
+            font=ctk.CTkFont(T.FONT_SANS, 11), text_color=T.TEXT_SECONDARY,
+            wraplength=350, anchor="w", justify="left"
+        )
+        self.lbl_gdrive.pack(side="left", fill="x", expand=True)
+
+        # Кнопки конфига
+        btn_cfg_row = ctk.CTkFrame(cfg_card, fg_color="transparent")
+        btn_cfg_row.pack(fill="x", padx=12, pady=(0, 10))
 
         ctk.CTkButton(
-            rep_row, text="Обзор…",
-            fg_color=T.BG_CARD, hover_color=T.BORDER, text_color=T.TEXT_SECONDARY,
-            width=80, height=32, corner_radius=6,
-            command=self._browse_dir
-        ).grid(row=0, column=1)
+            btn_cfg_row, text="✏️  Изменить конфигурацию",
+            fg_color=T.BG_INPUT, hover_color=T.BORDER,
+            text_color=T.TEXT_SECONDARY,
+            height=30, corner_radius=6,
+            font=ctk.CTkFont(T.FONT_SANS, 11),
+            command=self._reconfigure
+        ).pack(side="left", padx=(0, 8))
+
+        ctk.CTkButton(
+            btn_cfg_row, text="📂  Открыть config.ini",
+            fg_color=T.BG_INPUT, hover_color=T.BORDER,
+            text_color=T.TEXT_SECONDARY,
+            height=30, corner_radius=6,
+            font=ctk.CTkFont(T.FONT_SANS, 11),
+            command=self._open_config_file
+        ).pack(side="left")
 
         # ── Автозапуск ────────────────────────────────────────────────────────
-        auto_card = self._card("⚙️  Автозапуск при старте Windows", row=2)
+        auto_card = self._card("⚙️  Автозапуск при старте Windows", row=1)
 
         auto_row = ctk.CTkFrame(auto_card, fg_color="transparent")
         auto_row.pack(fill="x", padx=12, pady=8)
@@ -80,50 +104,35 @@ class SettingsTab(ctk.CTkFrame):
         )
         self.lbl_autostart.pack(side="left", padx=12)
 
-        # ── Кнопка сохранения ─────────────────────────────────────────────────
-        btn_row = ctk.CTkFrame(self, fg_color="transparent")
-        btn_row.grid(row=3, column=0, sticky="e", padx=12, pady=(8, 12))
-
-        self.lbl_saved = ctk.CTkLabel(
-            btn_row, text="",
-            font=ctk.CTkFont(T.FONT_SANS, 11), text_color=T.SUCCESS
-        )
-        self.lbl_saved.pack(side="left", padx=(0, 12))
-
-        ctk.CTkButton(
-            btn_row, text="💾  Сохранить",
-            fg_color=T.ACCENT, hover_color=T.ACCENT_HOVER,
-            font=ctk.CTkFont(T.FONT_SANS, 12, "bold"),
-            height=34, corner_radius=6,
-            command=self._save
-        ).pack(side="right")
-
     # ─── Логика ───────────────────────────────────────────────────────────────
 
     def _load(self):
-        """Загружает настройки из БД."""
-        s = self.db.get_all_settings()
-        self._set(self.fld_surname, s.get('emp_surname', ''))
-        self._set(self.fld_name,    s.get('emp_name', ''))
-        self._set(self.fld_pos,     s.get('emp_position', ''))
-        default_dir = str(Path.home() / "Documents" / "WorkdayReports")
-        self._set(self.fld_dir, s.get('report_dir', default_dir))
+        """Загружает конфигурацию и отображает в интерфейсе."""
+        cfg = load_config()
+        login = cfg.get('login') or '—'
+        gdrive = cfg.get('google_drive_path') or '—'
+        self.lbl_login.configure(text=login)
+        self.lbl_gdrive.configure(text=gdrive)
 
-    def _save(self):
-        """Сохраняет все настройки в БД."""
-        self.db.set_setting('emp_surname',  self.fld_surname.get().strip())
-        self.db.set_setting('emp_name',     self.fld_name.get().strip())
-        self.db.set_setting('emp_position', self.fld_pos.get().strip())
-        self.db.set_setting('report_dir',   self.fld_dir.get().strip())
-        self.lbl_saved.configure(text="✓ Сохранено", text_color=T.SUCCESS)
-        self.after(3000, lambda: self.lbl_saved.configure(text=""))
+    def _reconfigure(self):
+        """Открывает диалог переконфигурации."""
+        from .setup_dialog import SetupDialog
+        dlg = SetupDialog(self)
+        self.wait_window(dlg)
+        if dlg.result:
+            self._load()   # Обновляем отображение
 
-    def _browse_dir(self):
-        """Диалог выбора папки."""
-        folder = fd.askdirectory(title="Выберите папку для отчётов")
-        if folder:
-            self.fld_dir.delete(0, "end")
-            self.fld_dir.insert(0, folder)
+    def _open_config_file(self):
+        """Открывает config.ini в Блокноте."""
+        path = get_config_path()
+        if path.exists():
+            os.startfile(str(path))
+        else:
+            from tkinter import messagebox
+            messagebox.showwarning(
+                "Конфиг не найден",
+                "Файл config.ini не создан.\nСначала настройте конфигурацию."
+            )
 
     # ── Автозапуск через реестр Windows ──────────────────────────────────────
 
@@ -150,7 +159,6 @@ class SettingsTab(ctk.CTkFrame):
                 0, winreg.KEY_SET_VALUE
             )
             if self.autostart_var.get():
-                # Путь к исполняемому файлу / main.py
                 exe_path = self._get_exe_path()
                 winreg.SetValueEx(key, APP_NAME, 0, winreg.REG_SZ, exe_path)
                 self.lbl_autostart.configure(text="✓ Автозапуск включён", text_color=T.SUCCESS)
@@ -174,12 +182,10 @@ class SettingsTab(ctk.CTkFrame):
         pythonw.exe запускает скрипт без окна CMD — VBS-лаунчер не нужен.
         """
         if getattr(sys, 'frozen', False):
-            # Запуск из .exe (собранный PyInstaller)
             return f'"{sys.executable}"'
         else:
             script_dir = Path(__file__).parent.parent
             main_py = script_dir / "main.py"
-            # pythonw.exe = python без консольного окна
             pythonw = sys.executable.replace("python.exe", "pythonw.exe")
             return f'"{pythonw}" "{main_py}"'
 
@@ -197,40 +203,3 @@ class SettingsTab(ctk.CTkFrame):
         ).pack(anchor="w", padx=12, pady=(8, 2))
 
         return outer
-
-    def _field(self, parent, label: str) -> ctk.CTkEntry:
-        """Создаёт поле ввода с подписью."""
-        row = ctk.CTkFrame(parent, fg_color="transparent")
-        row.pack(fill="x", padx=12, pady=(0, 6))
-        row.grid_columnconfigure(1, weight=1)
-
-        ctk.CTkLabel(
-            row, text=label, width=100, anchor="w",
-            font=ctk.CTkFont(T.FONT_SANS, 12), text_color=T.TEXT_MUTED
-        ).grid(row=0, column=0)
-
-        entry = ctk.CTkEntry(
-            row,
-            fg_color=T.BG_INPUT, border_color=T.BORDER, text_color=T.TEXT_PRIMARY,
-            font=ctk.CTkFont(T.FONT_SANS, 12), height=30, corner_radius=6
-        )
-        entry.grid(row=0, column=1, sticky="ew")
-        return entry
-
-    @staticmethod
-    def _set(entry: ctk.CTkEntry, value: str):
-        entry.delete(0, "end")
-        entry.insert(0, value)
-
-    def get_employee_info(self) -> dict:
-        """Возвращает данные сотрудника (для генерации отчёта)."""
-        return {
-            'surname':  self.db.get_setting('emp_surname', ''),
-            'name':     self.db.get_setting('emp_name', ''),
-            'position': self.db.get_setting('emp_position', ''),
-        }
-
-    def get_report_dir(self) -> str:
-        """Возвращает папку для отчётов."""
-        default = str(Path.home() / "Documents" / "WorkdayReports")
-        return self.db.get_setting('report_dir', default)
