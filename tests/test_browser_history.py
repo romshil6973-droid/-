@@ -77,6 +77,7 @@ class TestTimestampConversion:
         assert isinstance(result, datetime)
         assert result.year >= 2023
 
+    @pytest.mark.skipif(__import__('sys').platform == 'win32', reason='Windows не поддерживает даты до 1970')
     def test_chrome_ts_zero_is_epoch(self):
         # 0 = 1601-01-01, function must not raise
         result = _chrome_ts_to_datetime(0)

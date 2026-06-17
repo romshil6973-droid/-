@@ -200,33 +200,6 @@ class TestConfig:
         ok, _ = validate_login("Shilov")
         assert not ok
 
-    def test_validate_gdrive_path_nonexistent(self):
-        from core.config import validate_gdrive_path
-        ok, msg = validate_gdrive_path(r"C:\nonexistent\path\xyz123")
-        assert not ok
-
-    def test_validate_gdrive_path_empty(self):
-        from core.config import validate_gdrive_path
-        ok, msg = validate_gdrive_path("")
-        assert not ok
-
-    def test_validate_gdrive_path_valid(self, tmp_path):
-        from core.config import validate_gdrive_path
-        ok, msg = validate_gdrive_path(str(tmp_path))
-        assert ok
-
-    def test_save_and_load_config(self, tmp_path, monkeypatch):
-        """Сохранение и загрузка конфига."""
-        from core import config as cfg_module
-        config_file = tmp_path / "config.ini"
-        monkeypatch.setattr(cfg_module, "get_config_path", lambda: config_file)
-
-        cfg_module.save_config("shilov", r"C:\GDrive\Reports")
-        result = cfg_module.load_config()
-
-        assert result["login"] == "shilov"
-        assert result["google_drive_path"] == r"C:\GDrive\Reports"
-
     def test_config_exists_false_when_no_file(self, tmp_path, monkeypatch):
         from core import config as cfg_module
         config_file = tmp_path / "no_config.ini"
@@ -237,5 +210,5 @@ class TestConfig:
         from core import config as cfg_module
         config_file = tmp_path / "config.ini"
         monkeypatch.setattr(cfg_module, "get_config_path", lambda: config_file)
-        cfg_module.save_config("shilov", r"C:\GDrive\Reports")
+        cfg_module.save_config("shilov")
         assert cfg_module.config_exists()
