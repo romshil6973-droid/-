@@ -6,7 +6,7 @@ import os
 import re
 from pathlib import Path
 
-SERVER_URL = "https://46.149.68.148"
+SERVER_URL = "http://46.149.68.148"
 API_TOKEN  = "SP2026secure"
 
 def get_config_path() -> Path:
